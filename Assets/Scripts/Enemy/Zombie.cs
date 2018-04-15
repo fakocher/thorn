@@ -12,6 +12,9 @@ public class Zombie : MonoBehaviour {
     private bool direction;
     private Animator animator;
 
+    public List<GameObject> bonuses;
+    public float bonusDropChance = 0.1f;
+
 	// Use this for initialization
 	void Start () {
         animator = GetComponent<Animator>();
@@ -27,6 +30,10 @@ public class Zombie : MonoBehaviour {
 	void FixedUpdate () {
         transform.Translate(Vector3.right * (direction ? 1 : -1) * speed * 1.5f * Time.deltaTime);
         if (health <= 0 || transform.position.y < min.y - 10) {
+            // Drop bonus?
+            if (Random.value < bonusDropChance) {
+                Instantiate(bonuses[Random.Range(0, bonuses.Count)], transform.position, Quaternion.identity);
+            }
             animator.SetBool("death", true);
             transform.Rotate(new Vector3(0,0,90));
             gameObject.layer = 12;
@@ -40,7 +47,7 @@ public class Zombie : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.CompareTag("Player")) {
-            other.gameObject.GetComponent<PlayerPlatformerController>().Die(transform.position.x - other.transform.position.x > 0);
+            other.gameObject.GetComponent<PlayerPlatformerController>().Hit(transform.position.x - other.transform.position.x > 0);
         }
     }
 }

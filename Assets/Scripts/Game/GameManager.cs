@@ -32,9 +32,9 @@ public class GameManager : MonoBehaviour {
             numberOfZombies--;
             zombieSpawnTimer = Random.Range(0.3f, 1f);
         }
-        foreach(GameObject z in zombies) {
-            if(z.GetComponent<Zombie>() == null || z.GetComponent<Zombie>().health <= 0) {
-                zombies.Remove(z);
+        for(int i = 0; i < zombies.Count; i++) {
+            if (zombies[i].GetComponent<Zombie>() == null || zombies[i].GetComponent<Zombie>().health <= 0) {
+                zombies.RemoveAt(i);
             }
         }
         if(zombies.Count <= 0 && numberOfZombies == 0) {

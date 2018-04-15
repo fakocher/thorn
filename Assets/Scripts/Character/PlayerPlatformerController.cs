@@ -6,7 +6,13 @@ public class PlayerPlatformerController : PhysicsObject {
 
     public float maxSpeed = 7;
     public float jumpTakeOffSpeed = 7;
+    public float shootSpeed = 1;
+    public float explosiveBullets = 0;
+    public float bulletSize = 1;
+    public float maxLife = 3;
+    // TODO Capacity to slow time down??
 
+    private float currentLife; // TODO lose one life when touching a zombie and get kicked back?
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -14,6 +20,7 @@ public class PlayerPlatformerController : PhysicsObject {
     void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        currentLife = maxLife;
     }
 
     protected override void ComputeVelocity() {
@@ -45,11 +52,31 @@ public class PlayerPlatformerController : PhysicsObject {
         targetVelocity = move * maxSpeed;
     }
 
-    public void Die(bool direction) {
-        rb2d.constraints = 0;
-        animator.SetBool("death", true);
-        rb2d.AddForce(new Vector2(500 * (direction ? -1 : 1), 500));
-        GameManager.instance.GameOver();
-        Destroy(this);
+    public void Hit(bool direction) {
+        currentLife--;
+
+        if(currentLife <= 0) {
+            rb2d.AddForce(new Vector2(500 * (direction ? -1 : 1), 500));
+            rb2d.constraints = 0;
+            animator.SetBool("death", true);
+            GameManager.instance.GameOver();
+            Destroy(this);
+        }
+        else {
+            rb2d.AddForce(new Vector2(300 * (direction ? -1 : 1), 300));
+        }
+    }
+    void OnTriggerEnter2D(Collider2D collision) {
+        if (collision.tag == "Bonus") {
+            maxSpeed += collision.GetComponent<Bonus>().moveSpeed;
+            jumpTakeOffSpeed += collision.GetComponent<Bonus>().jumpHeight;
+            currentLife +=  collision.GetComponent<Bonus>().heal;
+            currentLife = currentLife > maxLife ? maxLife : currentLife;
+            maxLife += collision.GetComponent<Bonus>().lifeIncrease;
+            shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
+            bulletSize += collision.GetComponent<Bonus>().bulletSize;
+            explosiveBullets += collision.GetComponent<Bonus>().explosiveAmmo;
+            Destroy(collision.gameObject);
+        }
     }
 }
