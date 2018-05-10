@@ -10,6 +10,7 @@ public class Cinematic : MonoBehaviour {
     public int[] durations;
     int i = 0;
     float timer;
+    public int sceneIndex;
 
 	// Use this for initialization
 	void Start () {
@@ -31,7 +32,7 @@ public class Cinematic : MonoBehaviour {
                 timer = durations[i];
             }
             else {
-                SceneManager.LoadScene(2);
+                SceneManager.LoadScene(sceneIndex);
             }
         }
 	}

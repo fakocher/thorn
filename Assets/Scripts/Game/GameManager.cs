@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour {
     private float waveUiTimer;
     private int numberOfZombies = 0;
     private int wave = 0;
+    public int numberOfWaves = 5;
 
 
     // Use this for initialization
@@ -41,6 +42,9 @@ public class GameManager : MonoBehaviour {
             // new wave
             waveUI.enabled = true;
             wave++;
+            if(wave > numberOfWaves) {
+                SceneManager.LoadScene(3);
+            }
             waveUI.text = "Wave " + wave;
             numberOfZombies = wave * 10 - 5;
             waveUiTimer = displayWaveUIDuration;
