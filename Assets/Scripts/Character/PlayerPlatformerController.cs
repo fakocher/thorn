@@ -9,10 +9,11 @@ public class PlayerPlatformerController : PhysicsObject {
     public float shootSpeed = 1;
     public float explosiveBullets = 0;
     public float bulletSize = 1;
-    public float maxLife = 3;
+    public int hp = 3;
+    public int maxHp = 6;
     // TODO Capacity to slow time down??
 
-    private float currentLife; // TODO lose one life when touching a zombie and get kicked back?
+    private int currentHp;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -20,7 +21,8 @@ public class PlayerPlatformerController : PhysicsObject {
     void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        currentLife = maxLife;
+        currentHp = hp;
+        GetComponent<HealthUI>().updateHealth(currentHp, hp);
     }
 
     protected override void ComputeVelocity() {
@@ -53,9 +55,10 @@ public class PlayerPlatformerController : PhysicsObject {
     }
 
     public void Hit(bool direction) {
-        currentLife--;
+        currentHp--;
+        GetComponent<HealthUI>().updateHealth(currentHp, hp);
 
-        if(currentLife <= 0) {
+        if(currentHp <= 0) {
             rb2d.AddForce(new Vector2(500 * (direction ? -1 : 1), 500));
             rb2d.constraints = 0;
             animator.SetBool("death", true);
@@ -70,12 +73,13 @@ public class PlayerPlatformerController : PhysicsObject {
         if (collision.tag == "Bonus") {
             maxSpeed += collision.GetComponent<Bonus>().moveSpeed;
             jumpTakeOffSpeed += collision.GetComponent<Bonus>().jumpHeight;
-            currentLife +=  collision.GetComponent<Bonus>().heal;
-            currentLife = currentLife > maxLife ? maxLife : currentLife;
-            maxLife += collision.GetComponent<Bonus>().lifeIncrease;
+            currentHp = currentHp < hp ? collision.GetComponent<Bonus>().heal + hp : hp;
+            currentHp = currentHp > hp ? hp : currentHp;
+            hp += hp < maxHp ? collision.GetComponent<Bonus>().lifeIncrease : 0;
             shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
             bulletSize += collision.GetComponent<Bonus>().bulletSize;
             explosiveBullets += collision.GetComponent<Bonus>().explosiveAmmo;
+            GetComponent<HealthUI>().updateHealth(currentHp, hp);
             Destroy(collision.gameObject);
         }
     }

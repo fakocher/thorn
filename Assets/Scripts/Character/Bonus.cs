@@ -8,6 +8,6 @@ public class Bonus : MonoBehaviour {
     public float bulletSize = 0;
     public float jumpHeight = 0;
     public float explosiveAmmo = 0;
-    public float lifeIncrease = 0;
-    public float heal = 0;
+    public int lifeIncrease = 0;
+    public int heal = 0;
 }
