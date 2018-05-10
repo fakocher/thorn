@@ -9,6 +9,9 @@ public class Camera2DFollow : MonoBehaviour {
 	public float lookAheadReturnSpeed = 0.5f;
 	public float lookAheadMoveThreshold = 0.1f;
 	public float yPosRestriction = -1;
+
+    public float xMin;
+    public float xMax;
 	
 	float offsetZ;
 	Vector3 lastTargetPosition;
@@ -53,7 +56,13 @@ public class Camera2DFollow : MonoBehaviour {
 		lastTargetPosition = target.position;		
 	}
 
-	void FindPlayer () {
+    private void LateUpdate() {
+        Vector3 p = transform.position;
+        p.x = Mathf.Clamp(p.x, xMin, xMax);
+        transform.position = p;
+    }
+
+    void FindPlayer () {
 		if (nextTimeToSearch <= Time.time) {
 			GameObject searchResult = GameObject.FindGameObjectWithTag ("Player");
 			if (searchResult != null)

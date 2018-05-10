@@ -17,7 +17,7 @@ public class GunController : MonoBehaviour {
 	void FixedUpdate () {
 		if(Input.GetAxis("Fire1") > 0) {
             if(shoot_timer <= 0) {
-                GetComponent<CameraShake>().Shake(.05f,0.2f);
+                GetComponent<CameraShake>().Shake(.02f,0.2f);
                 GameObject b = (GameObject)Instantiate(bullet, transform.position, transform.rotation);
                 b.transform.localScale *= GetComponentInParent<PlayerPlatformerController>().bulletSize;
                 b.transform.Rotate(new Vector3(0, 0, Random.Range(-2f, 2f)));
