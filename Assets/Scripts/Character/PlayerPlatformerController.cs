@@ -25,6 +25,13 @@ public class PlayerPlatformerController : PhysicsObject {
         GetComponent<HealthUI>().updateHealth(currentHp, hp);
     }
 
+    void Update() {
+        base.Update();
+        if(transform.position.y < -3) {
+            Die();
+        }
+    }
+
     protected override void ComputeVelocity() {
         Vector2 move = Vector2.zero;
 
@@ -59,16 +66,21 @@ public class PlayerPlatformerController : PhysicsObject {
         GetComponent<HealthUI>().updateHealth(currentHp, hp);
 
         if(currentHp <= 0) {
-            rb2d.AddForce(new Vector2(500 * (direction ? -1 : 1), 500));
-            rb2d.constraints = 0;
-            animator.SetBool("death", true);
-            GameManager.instance.GameOver();
-            Destroy(this);
+            Die(direction);
         }
         else {
             rb2d.AddForce(new Vector2(300 * (direction ? -1 : 1), 300));
         }
     }
+
+    void Die(bool direction = false) {
+        rb2d.AddForce(new Vector2(500 * (direction ? -1 : 1), 500));
+        rb2d.constraints = 0;
+        animator.SetBool("death", true);
+        GameManager.instance.GameOver();
+        Destroy(this);
+    }
+
     void OnTriggerEnter2D(Collider2D collision) {
         if (collision.tag == "Bonus") {
             maxSpeed += collision.GetComponent<Bonus>().moveSpeed;
