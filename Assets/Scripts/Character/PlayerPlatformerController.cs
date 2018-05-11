@@ -90,6 +90,7 @@ public class PlayerPlatformerController : PhysicsObject {
             hp += hp < maxHp ? collision.GetComponent<Bonus>().lifeIncrease : 0;
             shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
             bulletSize += collision.GetComponent<Bonus>().bulletSize;
+            GetComponentInChildren<GunController>().explosion += collision.GetComponent<Bonus>().explosiveAmmo;
             explosiveBullets += collision.GetComponent<Bonus>().explosiveAmmo;
             GetComponent<HealthUI>().updateHealth(currentHp, hp);
             Destroy(collision.gameObject);
