@@ -11,6 +11,7 @@ public class PlayerPlatformerController : PhysicsObject {
     public float bulletSize = 1;
     public int hp = 3;
     public int maxHp = 6;
+    public AudioSource dyingByFallingSound;
     // TODO Capacity to slow time down??
 
     private int currentHp;
@@ -28,6 +29,7 @@ public class PlayerPlatformerController : PhysicsObject {
     void Update() {
         base.Update();
         if(transform.position.y < -3) {
+            dyingByFallingSound.Play();
             Die();
         }
     }

@@ -15,15 +15,27 @@ public class Zombie : MonoBehaviour {
     public List<GameObject> bonuses;
     public float bonusDropChance = 0.1f;
 
-	// Use this for initialization
-	void Start () {
+    public List<GameObject> spawnLocations;
+
+    // Use this for initialization
+    void Start () {
         animator = GetComponent<Animator>();
         animator.SetBool("walking", true);
         direction = Random.value > 0.5f;
         if (!direction) {
             GetComponent<SpriteRenderer>().flipX = true;
         }
-        transform.position = new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
+
+        if (spawnLocations.Count == 0)
+        {
+            transform.position = new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
+        }
+        else
+        {
+            System.Random rand = new System.Random();
+            int index = rand.Next(spawnLocations.Count);
+            transform.position = spawnLocations[index].transform.position;
+        }
     }
 	
 	// Update is called once per frame
