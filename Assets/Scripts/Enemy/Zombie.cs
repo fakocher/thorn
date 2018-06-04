@@ -13,7 +13,7 @@ public class Zombie : MonoBehaviour {
     private SpriteRenderer sr;
 
     public List<GameObject> bonuses;
-    public float bonusDropChance = 0.1f;
+    private float bonusDropChance = 0.2f;
     
     public Vector2 minSpawnPosition;
     public Vector2 maxSpawnPosition;
@@ -28,7 +28,6 @@ public class Zombie : MonoBehaviour {
 
     private float flashTimer = 0.0f;
     private float flashTimerMax = 0.5f;
-    private Color initialColor;
 
     // Use this for initialization
     void Start () {
@@ -78,7 +77,9 @@ public class Zombie : MonoBehaviour {
         if (health <= 0 || transform.position.y < minSpawnPosition.y - 10) {
             // Drop bonus?
             if (Random.value < bonusDropChance) {
-                Instantiate(bonuses[Random.Range(0, bonuses.Count - 1)], transform.position, Quaternion.identity);
+                Vector2 bonusPosition = transform.position;
+                bonusPosition.y += 0.5f;
+                Instantiate(bonuses[Random.Range(0, bonuses.Count - 1)], bonusPosition, Quaternion.identity);
             }
             animator.SetBool("death", true);
             transform.Rotate(new Vector3(0, 0, 90));
@@ -138,7 +139,6 @@ public class Zombie : MonoBehaviour {
 
         // Flashing
         flashTimer = flashTimerMax;
-        initialColor = sr.material.color;
         Color newColor = sr.material.color;
         newColor.b = 0.0f;
         newColor.g = 0.0f;

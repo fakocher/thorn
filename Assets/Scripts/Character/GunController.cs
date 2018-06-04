@@ -3,9 +3,17 @@
 public class GunController : MonoBehaviour {
 
     public GameObject bulletTemplate;
-    public float firerate = 1;
-    private float shootTimer = 0;
-    public float explosion = 0;
+    public float firerate = 1.0f;
+    private float shootTimer = 0.0f;
+    public float explosion = 0.0f;
+    public AudioClip heavyAudioClip;
+    public AudioClip explosiveAudioClip;
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void Update()
     {
@@ -33,7 +41,14 @@ public class GunController : MonoBehaviour {
             newBullet.GetComponent<Bullet>().damage *= GetComponentInParent<PlayerPlatformerController>().bulletSize;
 
             // Play gun sound
-            GetComponent<AudioSource>().Play();
+            if (explosion > 0.0f)
+            {
+                audioSource.PlayOneShot(explosiveAudioClip);
+            }
+            else
+            {
+                audioSource.Play();
+            }
 
             // Recoil
             GetComponentInParent<Rigidbody2D>().transform.Translate(-transform.right * .1f);

@@ -14,6 +14,7 @@ public class PlayerPlatformerController : PhysicsObject {
     public AudioClip dyingSound;
     public AudioClip dyingByFallingSound;
     public AudioClip hitSound;
+    public AudioClip takeBonusAudioClip;
     public AudioClip[] gruntSounds;
     // TODO Capacity to slow time down??
 
@@ -24,7 +25,6 @@ public class PlayerPlatformerController : PhysicsObject {
 
     private float flashTimer = 0.0f;
     private float flashTimerMax = 0.5f;
-    private Color initialColor;
 
     // Use this for initialization
     void Awake() {
@@ -35,7 +35,7 @@ public class PlayerPlatformerController : PhysicsObject {
         GetComponent<HealthUI>().updateHealth(currentHp, hp);
     }
 
-    void Update() {
+    new void Update() {
         base.Update();
         if(transform.position.y < -3) {
             audioSource.PlayOneShot(dyingByFallingSound);
@@ -100,7 +100,6 @@ public class PlayerPlatformerController : PhysicsObject {
 
             // Flashing
             flashTimer = flashTimerMax;
-            initialColor = spriteRenderer.material.color;
             Color newColor = spriteRenderer.material.color;
             newColor.b = 0.0f;
             newColor.g = 0.0f;
@@ -116,18 +115,43 @@ public class PlayerPlatformerController : PhysicsObject {
         Destroy(this);
     }
 
-    void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.tag == "Bonus") {
+    void OnTriggerEnter2D(Collider2D collision)
+    {    
+        // Apply bonuses
+        if (collision.tag == "Bonus")
+        {
+            // Move speed
             maxSpeed += collision.GetComponent<Bonus>().moveSpeed;
+
+            // Jump height
             jumpTakeOffSpeed += collision.GetComponent<Bonus>().jumpHeight;
+
+            // Shooting speed
+            shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
+
+            // Bullet size
+            bulletSize += collision.GetComponent<Bonus>().bulletSize;
+
+            // Explosive ammo
+            float explosiveAmmo = collision.GetComponent<Bonus>().explosiveAmmo;
+            float explosion = GetComponentInChildren<GunController>().explosion;
+            if (explosiveAmmo > 0.0f && explosion == 0.0f)
+            {
+                GetComponentInChildren<GunController>().explosion += explosiveAmmo;
+                shootSpeed /= 2.0f;
+                explosiveBullets += explosiveAmmo;
+            }
+
+            // HP
             currentHp = currentHp < hp ? collision.GetComponent<Bonus>().heal + hp : hp;
             currentHp = currentHp > hp ? hp : currentHp;
             hp += hp < maxHp ? collision.GetComponent<Bonus>().lifeIncrease : 0;
-            shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
-            bulletSize += collision.GetComponent<Bonus>().bulletSize;
-            GetComponentInChildren<GunController>().explosion += collision.GetComponent<Bonus>().explosiveAmmo;
-            explosiveBullets += collision.GetComponent<Bonus>().explosiveAmmo;
             GetComponent<HealthUI>().updateHealth(currentHp, hp);
+
+            // Play sound
+            audioSource.PlayOneShot(takeBonusAudioClip);
+
+            // Destroy bonus
             Destroy(collision.gameObject);
         }
     }
