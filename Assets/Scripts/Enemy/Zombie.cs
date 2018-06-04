@@ -8,22 +8,23 @@ public class Zombie : MonoBehaviour {
     public float speed = 1f;
 
     private bool direction; // Right or left
+    private float flipChance = 0.005f;
     private Animator animator;
     private SpriteRenderer sr;
 
     public List<GameObject> bonuses;
     public float bonusDropChance = 0.1f;
-
-    // Either set spawn locations on the map or min / max locations.
-    public List<GameObject> spawnLocations;
+    
     public Vector2 minSpawnPosition;
     public Vector2 maxSpawnPosition;
+    private GameObject[] spawns;
 
     public AudioClip[] sounds;
     public AudioClip deathAudioClip;
     public AudioClip hitAudioClip;
     public AudioClip bloodAudioClip;
     private AudioSource audioSource;
+    private float groanChance = 0.005f;
 
     private float flashTimer = 0.0f;
     private float flashTimerMax = 0.5f;
@@ -35,25 +36,22 @@ public class Zombie : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        spawns = GameObject.FindGameObjectsWithTag("Spawn");
 
         // Init animation
         animator.SetBool("walking", true);
 
         // Init direction to random
         direction = Random.value > 0.5f;
-        if (!direction) {
-            sr.flipX = true;
-        }
-
-        if (spawnLocations.Count == 0)
+        sr.flipX = !direction;
+        
+        if (spawns.Length == 0)
         {
             transform.position = new Vector2(Random.Range(minSpawnPosition.x, maxSpawnPosition.x), Random.Range(minSpawnPosition.y, maxSpawnPosition.y));
         }
         else
         {
-            System.Random rand = new System.Random();
-            int index = rand.Next(spawnLocations.Count);
-            transform.position = spawnLocations[index].transform.position;
+            transform.position = spawns[Random.Range(0, spawns.Length)].transform.position;
         }
     }
 
@@ -80,7 +78,7 @@ public class Zombie : MonoBehaviour {
         if (health <= 0 || transform.position.y < minSpawnPosition.y - 10) {
             // Drop bonus?
             if (Random.value < bonusDropChance) {
-                Instantiate(bonuses[Random.Range(0, bonuses.Count)], transform.position, Quaternion.identity);
+                Instantiate(bonuses[Random.Range(0, bonuses.Count - 1)], transform.position, Quaternion.identity);
             }
             animator.SetBool("death", true);
             transform.Rotate(new Vector3(0, 0, 90));
@@ -91,18 +89,24 @@ public class Zombie : MonoBehaviour {
         }
 
         // Flip direction if reaching sides of map
+        // DEPRECATED: now use triggers with tag "ZombieLimit"
         /*
         if(transform.position.x > maxSpawnPosition.x || transform.position.y < minSpawnPosition.x) {
             flip();
         }*/
 
+        // Random flip of direction
+        if (Random.value < flipChance)
+        {
+            flip();
+        }
+
+
         // Play random sound at random moments
-        float chanceToPlay = 0.5f;
-        float randomFloat = Random.Range(0.0f, 100.0f);
-        if (randomFloat < chanceToPlay)
+        if (Random.value < groanChance)
         {
             float pitch = Random.Range(0.5f, 1.5f);
-            AudioClip randomSound = sounds[Random.Range(0, sounds.Length)];
+            AudioClip randomSound = sounds[Random.Range(0, sounds.Length - 1)];
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(randomSound);
         }
@@ -144,6 +148,6 @@ public class Zombie : MonoBehaviour {
     void flip()
     {
         direction = !direction;
-        sr.flipX = !sr.flipX;
+        sr.flipX = !direction;
     }
 }

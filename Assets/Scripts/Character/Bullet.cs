@@ -5,20 +5,36 @@ public class Bullet : MonoBehaviour {
     public float speed = 100;
     public float damage = 10;
     public float explosion = 0;
+    private float maxTravelDistance = 5.0f;
+    private Vector2 initialPosition;
     public GameObject explosionPrefab;
 
 	// Use this for initialization
 	void Start () {
-		
+        initialPosition = transform.position;
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
-        transform.Translate(Vector3.right * speed * 0.5f * Time.deltaTime);
-	}
+	void FixedUpdate ()
+    {
+        // Destroy bullet if too far travelled
+        Vector2 currentPosition = transform.position;
+        float distanceTravelled = Vector2.Distance(currentPosition, initialPosition);
+        print(distanceTravelled);
+        if (distanceTravelled >= maxTravelDistance)
+        {
+            Destroy(gameObject);
+        }
 
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.CompareTag("Enemy") && other.gameObject.GetComponent<Zombie>() != null) {
+        // Move bullet
+        transform.Translate(Vector3.right * speed * 0.5f * Time.deltaTime);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // Handle collision with Zombies
+        if (other.gameObject.CompareTag("Enemy") && other.gameObject.GetComponent<Zombie>() != null)
+        {
             other.gameObject.GetComponent<Zombie>().hit(damage);
 
             if (explosion > 0) {
