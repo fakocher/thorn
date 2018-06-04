@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerPlatformerController : PhysicsObject {
 
-    public float maxSpeed = 7;
-    public float jumpTakeOffSpeed = 7;
+    public float maxSpeed = 10;
+    public float jumpTakeOffSpeed = 13;
     public float shootSpeed = 1;
     public float explosiveBullets = 0;
     public float bulletSize = 1;
@@ -15,12 +15,16 @@ public class PlayerPlatformerController : PhysicsObject {
     public AudioClip dyingByFallingSound;
     public AudioClip hitSound;
     public AudioClip[] gruntSounds;
-    public AudioSource audioSource;
     // TODO Capacity to slow time down??
 
     private int currentHp;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
+    private AudioSource audioSource;
+
+    private float flashTimer = 0.0f;
+    private float flashTimerMax = 0.5f;
+    private Color initialColor;
 
     // Use this for initialization
     void Awake() {
@@ -36,6 +40,16 @@ public class PlayerPlatformerController : PhysicsObject {
         if(transform.position.y < -3) {
             audioSource.PlayOneShot(dyingByFallingSound);
             Die();
+        }
+
+        // Flashing
+        if (flashTimer > 0.0f)
+        {
+            flashTimer -= Time.deltaTime;
+            Color newColor = spriteRenderer.material.color;
+            newColor.b += Time.deltaTime / flashTimerMax;
+            newColor.g += Time.deltaTime / flashTimerMax;
+            spriteRenderer.material.color = newColor;
         }
     }
 
@@ -83,6 +97,14 @@ public class PlayerPlatformerController : PhysicsObject {
             audioSource.PlayOneShot(randomGruntSound);
             audioSource.PlayOneShot(hitSound);
             rb2d.AddForce(new Vector2(300 * (direction ? -1 : 1), 300));
+
+            // Flashing
+            flashTimer = flashTimerMax;
+            initialColor = spriteRenderer.material.color;
+            Color newColor = spriteRenderer.material.color;
+            newColor.b = 0.0f;
+            newColor.g = 0.0f;
+            spriteRenderer.material.color = newColor;
         }
     }
 

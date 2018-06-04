@@ -19,9 +19,20 @@ public class Zombie : MonoBehaviour {
     public Vector2 minSpawnPosition;
     public Vector2 maxSpawnPosition;
 
+    public AudioClip[] sounds;
+    public AudioClip deathAudioClip;
+    public AudioClip hitAudioClip;
+    public AudioClip bloodAudioClip;
+    private AudioSource audioSource;
+
+    private float flashTimer = 0.0f;
+    private float flashTimerMax = 0.5f;
+    private Color initialColor;
+
     // Use this for initialization
     void Start () {
 
+        audioSource = GetComponent<AudioSource>();
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
@@ -45,9 +56,22 @@ public class Zombie : MonoBehaviour {
             transform.position = spawnLocations[index].transform.position;
         }
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+
+    void Update()
+    {
+        // Flashing
+        if (flashTimer > 0.0f)
+        {
+            flashTimer -= Time.deltaTime;
+            Color newColor = sr.material.color;
+            newColor.b += Time.deltaTime / flashTimerMax;
+            newColor.g += Time.deltaTime / flashTimerMax;
+            sr.material.color = newColor;
+        }
+    }
+
+    // Update is called once per frame
+    void FixedUpdate () {
 
         // Handle movement
         transform.Translate(Vector3.right * (direction ? 1 : -1) * speed * 1.5f * Time.deltaTime);
@@ -61,6 +85,8 @@ public class Zombie : MonoBehaviour {
             animator.SetBool("death", true);
             transform.Rotate(new Vector3(0, 0, 90));
             gameObject.layer = 12;
+            sr.material.color = Color.grey;
+            audioSource.PlayOneShot(deathAudioClip);
             Destroy(this);
         }
 
@@ -69,7 +95,18 @@ public class Zombie : MonoBehaviour {
             direction = !direction;
             sr.flipX = !sr.flipX;
         }
-	}
+
+        // Play random sound at random moments
+        float chanceToPlay = 0.5f;
+        float randomFloat = Random.Range(0.0f, 100.0f);
+        if (randomFloat < chanceToPlay)
+        {
+            float pitch = Random.Range(0.5f, 1.5f);
+            AudioClip randomSound = sounds[Random.Range(0, sounds.Length)];
+            audioSource.pitch = pitch;
+            audioSource.PlayOneShot(randomSound);
+        }
+    }
 
     void OnCollisionEnter2D(Collision2D other) {
 
@@ -77,5 +114,21 @@ public class Zombie : MonoBehaviour {
         if (other.gameObject.CompareTag("Player")) {
             other.gameObject.GetComponent<PlayerPlatformerController>().Hit(transform.position.x - other.transform.position.x > 0);
         }
+    }
+
+    public void hit(float damage)
+    {
+        health -= damage;
+        audioSource.pitch = 1;
+        audioSource.PlayOneShot(hitAudioClip);
+        audioSource.PlayOneShot(bloodAudioClip);
+
+        // Flashing
+        flashTimer = flashTimerMax;
+        initialColor = sr.material.color;
+        Color newColor = sr.material.color;
+        newColor.b = 0.0f;
+        newColor.g = 0.0f;
+        sr.material.color = newColor;
     }
 }

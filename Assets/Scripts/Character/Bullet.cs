@@ -19,17 +19,16 @@ public class Bullet : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Enemy") && other.gameObject.GetComponent<Zombie>() != null) {
-            other.gameObject.GetComponent<Zombie>().health -= damage;
+            other.gameObject.GetComponent<Zombie>().hit(damage);
 
-
-            if(explosion > 0) {
+            if (explosion > 0) {
                 Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 
                 Collider[] hitColliders = Physics.OverlapSphere(transform.position, explosion);
                 int i = 0;
                 while (i < hitColliders.Length) {
                     if (hitColliders[i].gameObject.CompareTag("Enemy") && hitColliders[i].gameObject.GetComponent<Zombie>() != null) {
-                        hitColliders[i].gameObject.GetComponent<Zombie>().health -= damage;
+                        hitColliders[i].gameObject.GetComponent<Zombie>().hit(damage);
                         hitColliders[i].GetComponent<Rigidbody2D>().AddForce((hitColliders[i].transform.position - transform.position).normalized * 1000 * damage / (hitColliders[i].transform.position - transform.position).magnitude);
                     }
                     i++;
