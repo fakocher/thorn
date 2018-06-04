@@ -91,10 +91,10 @@ public class Zombie : MonoBehaviour {
         }
 
         // Flip direction if reaching sides of map
+        /*
         if(transform.position.x > maxSpawnPosition.x || transform.position.y < minSpawnPosition.x) {
-            direction = !direction;
-            sr.flipX = !sr.flipX;
-        }
+            flip();
+        }*/
 
         // Play random sound at random moments
         float chanceToPlay = 0.5f;
@@ -108,11 +108,20 @@ public class Zombie : MonoBehaviour {
         }
     }
 
-    void OnCollisionEnter2D(Collision2D other) {
-
+    void OnCollisionEnter2D(Collision2D other)
+    {
         // Handle collision with player
         if (other.gameObject.CompareTag("Player")) {
             other.gameObject.GetComponent<PlayerPlatformerController>().Hit(transform.position.x - other.transform.position.x > 0);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Handle collision with limits
+        if (collision.gameObject.CompareTag("ZombieLimit"))
+        {
+            flip();
         }
     }
 
@@ -130,5 +139,11 @@ public class Zombie : MonoBehaviour {
         newColor.b = 0.0f;
         newColor.g = 0.0f;
         sr.material.color = newColor;
+    }
+
+    void flip()
+    {
+        direction = !direction;
+        sr.flipX = !sr.flipX;
     }
 }
