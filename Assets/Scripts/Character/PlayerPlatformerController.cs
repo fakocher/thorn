@@ -11,7 +11,11 @@ public class PlayerPlatformerController : PhysicsObject {
     public float bulletSize = 1;
     public int hp = 3;
     public int maxHp = 6;
-    public AudioSource dyingByFallingSound;
+    public AudioClip dyingSound;
+    public AudioClip dyingByFallingSound;
+    public AudioClip hitSound;
+    public AudioClip[] gruntSounds;
+    public AudioSource audioSource;
     // TODO Capacity to slow time down??
 
     private int currentHp;
@@ -20,6 +24,7 @@ public class PlayerPlatformerController : PhysicsObject {
 
     // Use this for initialization
     void Awake() {
+        audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         currentHp = hp;
@@ -29,7 +34,7 @@ public class PlayerPlatformerController : PhysicsObject {
     void Update() {
         base.Update();
         if(transform.position.y < -3) {
-            dyingByFallingSound.Play();
+            audioSource.PlayOneShot(dyingByFallingSound);
             Die();
         }
     }
@@ -67,10 +72,16 @@ public class PlayerPlatformerController : PhysicsObject {
         currentHp--;
         GetComponent<HealthUI>().updateHealth(currentHp, hp);
 
-        if(currentHp <= 0) {
+        if(currentHp <= 0)
+        {
+            audioSource.PlayOneShot(dyingSound);
             Die(direction);
         }
-        else {
+        else
+        {
+            AudioClip randomGruntSound = gruntSounds[Random.Range(0, gruntSounds.Length)];
+            audioSource.PlayOneShot(randomGruntSound);
+            audioSource.PlayOneShot(hitSound);
             rb2d.AddForce(new Vector2(300 * (direction ? -1 : 1), 300));
         }
     }

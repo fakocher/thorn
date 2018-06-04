@@ -6,29 +6,37 @@ public class Zombie : MonoBehaviour {
 
     public float health = 50f;
     public float speed = 1f;
-    public Vector2 min;
-    public Vector2 max;
 
-    private bool direction;
+    private bool direction; // Right or left
     private Animator animator;
+    private SpriteRenderer sr;
 
     public List<GameObject> bonuses;
     public float bonusDropChance = 0.1f;
 
+    // Either set spawn locations on the map or min / max locations.
     public List<GameObject> spawnLocations;
+    public Vector2 minSpawnPosition;
+    public Vector2 maxSpawnPosition;
 
     // Use this for initialization
     void Start () {
+
+        sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+
+        // Init animation
         animator.SetBool("walking", true);
+
+        // Init direction to random
         direction = Random.value > 0.5f;
         if (!direction) {
-            GetComponent<SpriteRenderer>().flipX = true;
+            sr.flipX = true;
         }
 
         if (spawnLocations.Count == 0)
         {
-            transform.position = new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
+            transform.position = new Vector2(Random.Range(minSpawnPosition.x, maxSpawnPosition.x), Random.Range(minSpawnPosition.y, maxSpawnPosition.y));
         }
         else
         {
@@ -40,24 +48,32 @@ public class Zombie : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+
+        // Handle movement
         transform.Translate(Vector3.right * (direction ? 1 : -1) * speed * 1.5f * Time.deltaTime);
-        if (health <= 0 || transform.position.y < min.y - 10) {
+
+        // Handle death
+        if (health <= 0 || transform.position.y < minSpawnPosition.y - 10) {
             // Drop bonus?
             if (Random.value < bonusDropChance) {
                 Instantiate(bonuses[Random.Range(0, bonuses.Count)], transform.position, Quaternion.identity);
             }
             animator.SetBool("death", true);
-            transform.Rotate(new Vector3(0,0,90));
+            transform.Rotate(new Vector3(0, 0, 90));
             gameObject.layer = 12;
             Destroy(this);
         }
-        if(transform.position.x > max.x || transform.position.y < min.x) {
+
+        // Flip direction if reaching sides of map
+        if(transform.position.x > maxSpawnPosition.x || transform.position.y < minSpawnPosition.x) {
             direction = !direction;
-            GetComponent<SpriteRenderer>().flipX = !GetComponent<SpriteRenderer>().flipX;
+            sr.flipX = !sr.flipX;
         }
 	}
 
     void OnCollisionEnter2D(Collision2D other) {
+
+        // Handle collision with player
         if (other.gameObject.CompareTag("Player")) {
             other.gameObject.GetComponent<PlayerPlatformerController>().Hit(transform.position.x - other.transform.position.x > 0);
         }
