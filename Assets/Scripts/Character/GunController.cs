@@ -53,8 +53,8 @@ public class GunController : MonoBehaviour {
             // Recoil
             GetComponentInParent<Rigidbody2D>().transform.Translate(-transform.right * .1f);
 
-            // Destroy bullet after 2 seconds to prevent it to go indefinitely
-            Destroy(newBullet, 2f);
+            // Destroy bullet after a certain time to prevent it to go indefinitely
+            Destroy(newBullet, 0.5f);
 
             // Reset firerate timer
             shootTimer = 1 / (firerate * GetComponentInParent<PlayerPlatformerController>().shootSpeed);

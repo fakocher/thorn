@@ -7,10 +7,10 @@ public class Zombie : MonoBehaviour {
     public float health = 50f;
     public float speed = 1f;
 
-    private bool direction; // Right or left
+    protected bool direction; // Right or left
     private float flipChance = 0.005f;
     private Animator animator;
-    private SpriteRenderer sr;
+    protected SpriteRenderer sr;
     private Rigidbody2D rb;
 
     public List<GameObject> bonuses;
@@ -30,8 +30,10 @@ public class Zombie : MonoBehaviour {
     private float flashTimer = 0.0f;
     private float flashTimerMax = 0.5f;
 
+    public bool rotateOnDeath = true;
+
     // Use this for initialization
-    void Start () {
+    protected void Start () {
 
         audioSource = GetComponent<AudioSource>();
         sr = GetComponent<SpriteRenderer>();
@@ -83,7 +85,10 @@ public class Zombie : MonoBehaviour {
                 Instantiate(bonuses[Random.Range(0, bonuses.Count - 1)], bonusPosition, Quaternion.identity);
             }
             animator.SetBool("death", true);
-            transform.Rotate(new Vector3(0, 0, 90));
+            if (rotateOnDeath)
+            {
+                transform.Rotate(new Vector3(0, 0, 90));
+            }
             gameObject.layer = 12;
             sr.material.color = Color.grey;
             audioSource.PlayOneShot(deathAudioClip);

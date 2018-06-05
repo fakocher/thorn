@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public float displayWaveUIDuration = 5f;
     public GameObject zombie;
+    public GameObject dog;
     public Text waveUI;
     public int nextLevel;
     [HideInInspector]
@@ -33,6 +34,10 @@ public class GameManager : MonoBehaviour
         {
             if (numberOfZombies > 0 && zombieSpawnTimer <= 0)
             {
+                if (Random.value < 0.2f)
+                {
+                    zombies.Add(Instantiate(dog));
+                }
                 zombies.Add(Instantiate(zombie));
                 numberOfZombies--;
                 zombieSpawnTimer = Random.Range(0.3f, 1f);
