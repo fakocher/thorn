@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
     public float displayWaveUIDuration = 5f;
     public GameObject zombie;
     public Text waveUI;
+    public int nextLevel;
     [HideInInspector]
     public static GameManager instance;
 
@@ -20,43 +21,58 @@ public class GameManager : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         instance = this;
-	}
-
-
-	
-	// Update is called once per frame
-	void Update () {
-        if (numberOfZombies > 0 && zombieSpawnTimer <= 0) {
-            zombies.Add(Instantiate(zombie));
-            numberOfZombies--;
-            zombieSpawnTimer = Random.Range(0.3f, 1f);
-        }
-        for(int i = 0; i < zombies.Count; i++) {
-            if (zombies[i].GetComponent<Zombie>() == null || zombies[i].GetComponent<Zombie>().health <= 0) {
-                zombies.RemoveAt(i);
-            }
-        }
-        if(zombies.Count <= 0 && numberOfZombies == 0) {
-            // new wave
-            waveUI.enabled = true;
-            wave++;
-            if(wave > numberOfWaves) {
-                SceneManager.LoadScene(3);
-            }
-            waveUI.text = "Wave " + wave;
-            numberOfZombies = wave * 10 - 5;
-            waveUiTimer = displayWaveUIDuration;
-        }
-        if(waveUiTimer <= 0) {
-            waveUI.enabled = false;
-        }
-        waveUiTimer -= Time.deltaTime;
-        zombieSpawnTimer -= Time.deltaTime;
     }
 
-    public void GameOver() {
+    // Update is called once per frame
+    void Update()
+    {
+        if (numberOfWaves > 0)
+        {
+            if (numberOfZombies > 0 && zombieSpawnTimer <= 0)
+            {
+                zombies.Add(Instantiate(zombie));
+                numberOfZombies--;
+                zombieSpawnTimer = Random.Range(0.3f, 1f);
+            }
+            for (int i = 0; i < zombies.Count; i++)
+            {
+                if (zombies[i].GetComponent<Zombie>() == null || zombies[i].GetComponent<Zombie>().health <= 0)
+                {
+                    zombies.RemoveAt(i);
+                }
+            }
+            if (zombies.Count <= 0 && numberOfZombies == 0)
+            {
+                // new wave
+                waveUI.enabled = true;
+                wave++;
+                if (wave > numberOfWaves)
+                {
+                    SceneManager.LoadScene(nextLevel);
+                }
+                waveUI.text = "Wave " + wave;
+                numberOfZombies = wave * 10 - 5;
+                waveUiTimer = displayWaveUIDuration;
+            }
+            if (waveUiTimer <= 0)
+            {
+                waveUI.enabled = false;
+            }
+            waveUiTimer -= Time.deltaTime;
+            zombieSpawnTimer -= Time.deltaTime;
+        }
+        else
+        {
+            // Boss part
+
+        }
+    }
+
+    public void GameOver()
+    {
         Time.timeScale = 0.1f;
         waveUiTimer = 1000f;
         waveUI.text = "Game Over";
@@ -64,7 +80,8 @@ public class GameManager : MonoBehaviour {
         Invoke("LoadLevel", .5f);
     }
 
-    void LoadLevel() {
+    void LoadLevel()
+    {
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
