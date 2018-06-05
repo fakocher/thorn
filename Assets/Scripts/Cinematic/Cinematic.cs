@@ -48,7 +48,8 @@ public class Cinematic : MonoBehaviour {
         }
 
         // Show next text if timer is finished or a key is pressed
-        if (timer < 0 || Input.anyKeyDown)
+        // if (timer < 0 || Input.anyKeyDown)
+        if (timer < 0)
         {
             i++;
 
