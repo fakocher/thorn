@@ -125,20 +125,23 @@ public class PlayerPlatformerController : PhysicsObject {
         // Apply bonuses
         if (collision.tag == "Bonus")
         {
+            Bonus bonus = collision.GetComponent<Bonus>();
+            bonus.applyingEffects = true;
+
             // Move speed
-            maxSpeed += collision.GetComponent<Bonus>().moveSpeed;
+            maxSpeed += bonus.moveSpeed;
 
             // Jump height
-            jumpTakeOffSpeed += collision.GetComponent<Bonus>().jumpHeight;
+            jumpTakeOffSpeed += bonus.jumpHeight;
 
             // Shooting speed
-            shootSpeed += collision.GetComponent<Bonus>().shootSpeed;
+            shootSpeed += bonus.shootSpeed;
 
             // Bullet size
-            bulletSize += collision.GetComponent<Bonus>().bulletSize;
+            bulletSize += bonus.bulletSize;
 
             // Explosive ammo
-            float explosiveAmmo = collision.GetComponent<Bonus>().explosiveAmmo;
+            float explosiveAmmo = bonus.explosiveAmmo;
             float explosion = GetComponentInChildren<GunController>().explosion;
             if (explosiveAmmo > 0.0f && explosion == 0.0f)
             {
@@ -148,9 +151,9 @@ public class PlayerPlatformerController : PhysicsObject {
             }
 
             // HP
-            currentHp = currentHp < hp ? collision.GetComponent<Bonus>().heal + hp : hp;
+            currentHp = currentHp < hp ? bonus.heal + hp : hp;
             currentHp = currentHp > hp ? hp : currentHp;
-            hp += hp < maxHp ? collision.GetComponent<Bonus>().lifeIncrease : 0;
+            hp += hp < maxHp ? bonus.lifeIncrease : 0;
             GetComponent<HealthUI>().updateHealth(currentHp, hp);
 
             // Play sound

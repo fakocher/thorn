@@ -39,9 +39,12 @@ public class GameManager : MonoBehaviour
                 {
                     zombies.Add(Instantiate(dog));
                 }
-                zombies.Add(Instantiate(zombie));
+                else
+                {
+                    zombies.Add(Instantiate(zombie));
+                }
                 numberOfZombies--;
-                zombieSpawnTimer = Random.Range(0.3f, 1f);
+                zombieSpawnTimer = Random.Range(0.3f, 1.0f);
             }
             for (int i = 0; i < zombies.Count; i++)
             {
@@ -60,7 +63,7 @@ public class GameManager : MonoBehaviour
                     SceneManager.LoadScene(nextLevel);
                 }
                 waveUI.text = "Wave " + wave;
-                numberOfZombies = wave * 10 - 5;
+                numberOfZombies = wave * 5;
                 waveUiTimer = displayWaveUIDuration;
             }
             if (waveUiTimer <= 0)
