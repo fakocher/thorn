@@ -97,6 +97,7 @@ public class PlayerPlatformerController : PhysicsObject {
             audioSource.PlayOneShot(randomGruntSound);
             audioSource.PlayOneShot(hitSound);
             rb2d.AddForce(new Vector2(300 * (direction ? -1 : 1), 300));
+            Invoke("StopForce", 1);
 
             // Flashing
             flashTimer = flashTimerMax;
@@ -105,6 +106,10 @@ public class PlayerPlatformerController : PhysicsObject {
             newColor.g = 0.0f;
             spriteRenderer.material.color = newColor;
         }
+    }
+
+    void StopForce() {
+        rb2d.velocity = Vector2.zero;
     }
 
     void Die(bool direction = false) {
