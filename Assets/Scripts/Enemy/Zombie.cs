@@ -67,7 +67,6 @@ public class Zombie : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate () {
 
         // Handle movement
