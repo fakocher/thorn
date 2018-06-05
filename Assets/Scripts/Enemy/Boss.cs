@@ -22,6 +22,10 @@ public class Boss : MonoBehaviour {
     private float flashTimer = 0.0f;
     private float flashTimerMax = 0.5f;
 
+    private float timeBossDead = 3.0f;
+    private bool bossDead = false;
+
+
     // Use this for initialization
     void Start () {
         audioSource = GetComponent<AudioSource>();
@@ -54,9 +58,17 @@ public class Boss : MonoBehaviour {
         // Handle death
         if (health <= 0)
         {
-            animator.SetBool("death", true);
-            transform.Rotate(new Vector3(0, 0, 90));
-            Destroy(this);
+            if (!bossDead) { 
+                animator.SetBool("death", true);
+                transform.Rotate(new Vector3(0, 0, 90));
+                bossDead = true;
+            }
+            timeBossDead -= Time.deltaTime;
+            if(timeBossDead <= 0)
+            {
+                GameManager.instance.bossDead = true;
+                Destroy(this);
+            }
         }
 
         // Flip when reach square's border

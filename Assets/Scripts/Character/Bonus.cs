@@ -13,7 +13,7 @@ public class Bonus : MonoBehaviour {
 
     private Vector2 initialPosition;
     private float initialTime;
-    private float maxTime = 10.0f; // seconds
+    private float maxTime = 5.0f; // seconds
     private float timer = 0.0f;
     private SpriteRenderer sr;
 
