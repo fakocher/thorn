@@ -6,6 +6,8 @@ public class Boss : MonoBehaviour {
 
     public float health = 500f;
     public float speed = 3f;
+    public int jumpForce = 10;
+    public float timeMinBetweenJump = 5.0f;
 
     private bool direction; // Right or left
     public Vector2 minSpawnPosition;
@@ -13,6 +15,7 @@ public class Boss : MonoBehaviour {
 
     private Animator animator;
     private SpriteRenderer sr;
+    private Rigidbody2D rb;
 
     public AudioClip deathAudioClip;
     public AudioClip hitAudioClip;
@@ -23,13 +26,17 @@ public class Boss : MonoBehaviour {
     private float flashTimerMax = 0.5f;
 
     private float timeBossDead = 3.0f;
+    private float timeJumping = 5.0f;
     private bool bossDead = false;
+    private bool isJumping = false;
+    private float jumpChance = 0.02f;
 
 
     // Use this for initialization
     void Start () {
         audioSource = GetComponent<AudioSource>();
         sr = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         animator.SetBool("walking", true);
 
@@ -75,6 +82,22 @@ public class Boss : MonoBehaviour {
         if(transform.position.x <= minSpawnPosition.x || transform.position.x >= maxSpawnPosition.x)
         {
             flip();
+        }
+
+        // Boss Jump
+        if(!bossDead && !isJumping && Random.value < jumpChance)
+        {
+            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            isJumping = true;
+        }
+        if (isJumping)
+        {
+            timeJumping -= Time.deltaTime;
+
+            if(timeJumping <= 0) {
+                isJumping = false;
+                timeJumping = timeMinBetweenJump;
+            }
         }
     }
 
