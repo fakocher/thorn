@@ -31,6 +31,7 @@ public class Zombie : MonoBehaviour {
     private float flashTimerMax = 0.5f;
 
     public bool rotateOnDeath = true;
+    public int jumpForce = 10;
 
     // Use this for initialization
     protected void Start () {
@@ -138,7 +139,7 @@ public class Zombie : MonoBehaviour {
         // Handle collision with jumper
         if (collision.gameObject.CompareTag("ZombieJump"))
         {
-            rb.AddForce(new Vector2(0, 10), ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
         }
     }
 
