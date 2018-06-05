@@ -13,7 +13,7 @@ public class Zombie : MonoBehaviour {
     private SpriteRenderer sr;
 
     public List<GameObject> bonuses;
-    private float bonusDropChance = 0.2f;
+    private float bonusDropChance = 0.1f;
     
     public Vector2 minSpawnPosition;
     public Vector2 maxSpawnPosition;
