@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Boss : MonoBehaviour {
 
-    public float health = 50f;
-    public float speed = 2f;
+    public float health = 500f;
+    public float speed = 3f;
 
     private bool direction; // Right or left
     public Vector2 minSpawnPosition;
@@ -29,8 +29,9 @@ public class Boss : MonoBehaviour {
         animator = GetComponent<Animator>();
         animator.SetBool("walking", true);
 
-        direction = Random.value > 0.5f;
-        transform.position = new Vector2(Random.Range(minSpawnPosition.x, maxSpawnPosition.x), Random.Range(minSpawnPosition.y, maxSpawnPosition.y));
+        direction = false;
+        sr.flipX = true;
+        transform.position = new Vector2(maxSpawnPosition.x - 2, minSpawnPosition.y);
     }
 	
 	void Update () {
@@ -57,6 +58,18 @@ public class Boss : MonoBehaviour {
             transform.Rotate(new Vector3(0, 0, 90));
             Destroy(this);
         }
+
+        // Flip when reach square's border
+        if(transform.position.x <= minSpawnPosition.x || transform.position.x >= maxSpawnPosition.x)
+        {
+            flip();
+        }
+    }
+
+    void flip()
+    {
+        direction = !direction;
+        sr.flipX = !direction;
     }
 
     void OnCollisionEnter2D(Collision2D other)

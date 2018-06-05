@@ -27,8 +27,10 @@ public class Bullet : MonoBehaviour {
 
                 Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, explosion);
                 int i = 0;
-                while (i < hitColliders.Length) {
-                    if (hitColliders[i].gameObject.CompareTag("Enemy") && hitColliders[i].gameObject.GetComponent<Zombie>() != null) {
+                while (i < hitColliders.Length)
+                {
+                    if (hitColliders[i].gameObject.CompareTag("Enemy") && hitColliders[i].gameObject.GetComponent<Zombie>() != null)
+                    {
                         hitColliders[i].gameObject.GetComponent<Zombie>().hit(damage);
                         hitColliders[i].GetComponent<Rigidbody2D>().AddForce((hitColliders[i].transform.position - transform.position).normalized * 20 * damage / (hitColliders[i].transform.position - transform.position).magnitude);
                     }
@@ -37,6 +39,12 @@ public class Bullet : MonoBehaviour {
             }
 
             Destroy(gameObject);
+        }
+
+        // Handle collision with Boss
+        if (other.gameObject.CompareTag("Boss") && other.gameObject.GetComponent<Boss>() != null)
+        {
+            other.gameObject.GetComponent<Boss>().hit(damage);
         }
     }
 }
