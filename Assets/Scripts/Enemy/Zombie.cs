@@ -11,6 +11,7 @@ public class Zombie : MonoBehaviour {
     private float flipChance = 0.005f;
     private Animator animator;
     private SpriteRenderer sr;
+    private Rigidbody2D rb;
 
     public List<GameObject> bonuses;
     private float bonusDropChance = 0.1f;
@@ -34,6 +35,7 @@ public class Zombie : MonoBehaviour {
 
         audioSource = GetComponent<AudioSource>();
         sr = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spawns = GameObject.FindGameObjectsWithTag("Spawn");
 
@@ -127,6 +129,12 @@ public class Zombie : MonoBehaviour {
         if (collision.gameObject.CompareTag("ZombieLimit"))
         {
             flip();
+        }
+
+        // Handle collision with jumper
+        if (collision.gameObject.CompareTag("ZombieJump"))
+        {
+            rb.AddForce(new Vector2(0, 10), ForceMode2D.Impulse);
         }
     }
 
