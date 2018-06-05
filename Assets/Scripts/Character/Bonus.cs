@@ -16,6 +16,7 @@ public class Bonus : MonoBehaviour {
     private float maxTime = 5.0f; // seconds
     private float timer = 0.0f;
     private SpriteRenderer sr;
+    public bool applyingEffects = false;
 
     private void Start()
     {
@@ -29,7 +30,7 @@ public class Bonus : MonoBehaviour {
         timer += Time.deltaTime;
 
         // Destroy after max time
-        if (timer >= maxTime)
+        if (timer >= maxTime && !applyingEffects)
         {
             Destroy(this);
         }
